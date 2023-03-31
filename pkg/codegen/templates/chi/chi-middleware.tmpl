@@ -30,7 +30,7 @@ func (siw *ServerInterfaceWrapper) {{$opid}}(w http.ResponseWriter, r *http.Requ
   }
   {{end}}
   {{if .IsStyled}}
-  err = runtime.BindStyledParameterWithLocation("{{.Style}}",{{.Explode}}, "{{.ParamName}}", runtime.ParamLocationPath, chi.URLParam(r, "{{.ParamName}}"), &{{$varName}})
+  err = runtime.BindStyledParameterWithLocation("{{.Style}}",{{.Explode}}, "{{.ParamName}}", runtime.ParamLocationPath, {{if .Wildcard}}chi.URLParam(r, "*"){{else}}chi.URLParam(r, "{{.ParamName}}"){{end}}, &{{$varName}})
   if err != nil {
     siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "{{.ParamName}}", Err: err})
     return

@@ -281,11 +281,28 @@ func TestSwaggerUriToGorillaUri(t *testing.T) { // TODO
 }
 
 func TestOrderedParamsFromUri(t *testing.T) {
-	result := OrderedParamsFromUri("/path/{param1}/{.param2}/{;param3*}/foo")
-	assert.EqualValues(t, []string{"param1", "param2", "param3"}, result)
+	result := OrderedParamsFromUri("/path/{param1}/{.param2}/{;param3*}/foo/{param4=*}")
+	assert.EqualValues(t, []pathParam{
+		{
+			name:     "param1",
+			wildcard: false,
+		},
+		{
+			name:     "param2",
+			wildcard: false,
+		},
+		{
+			name:     "param3",
+			wildcard: false,
+		},
+		{
+			name:     "param4",
+			wildcard: true,
+		},
+	}, result)
 
 	result = OrderedParamsFromUri("/path/foo")
-	assert.EqualValues(t, []string{}, result)
+	assert.EqualValues(t, []pathParam{}, result)
 }
 
 func TestReplacePathParamsWithStr(t *testing.T) {

@@ -32,8 +32,14 @@ var (
 	separatorSet   map[rune]struct{}
 )
 
+type pathParam struct {
+	name string
+	// If true, this is a path parameter that is a wildcard, and should be
+	wildcard bool
+}
+
 func init() {
-	pathParamRE = regexp.MustCompile(`{[.;?]?([^{}*]+)\*?}`)
+	pathParamRE = regexp.MustCompile(`{[.;?]?([^{}=*]+)(=?\*)?}`)
 
 	predeclaredIdentifiers := []string{
 		// Types
@@ -462,12 +468,16 @@ func SwaggerUriToGorillaUri(uri string) string {
 
 // OrderedParamsFromUri returns the argument names, in order, in a given URI string, so for
 // /path/{param1}/{.param2*}/{?param3}, it would return param1, param2, param3
-func OrderedParamsFromUri(uri string) []string {
+func OrderedParamsFromUri(uri string) []pathParam {
 	matches := pathParamRE.FindAllStringSubmatch(uri, -1)
-	result := make([]string, len(matches))
+	result := make([]pathParam, len(matches))
 	for i, m := range matches {
-		result[i] = m[1]
+		result[i] = pathParam{
+			name:     m[1],
+			wildcard: m[2] == "=*",
+		}
 	}
+
 	return result
 }
 
@@ -485,12 +495,13 @@ func SortParamsByPath(path string, in []ParameterDefinition) ([]ParameterDefinit
 			path, len(pathParams), n)
 	}
 	out := make([]ParameterDefinition, len(in))
-	for i, name := range pathParams {
-		p := ParameterDefinitions(in).FindByName(name)
+	for i, pathParam := range pathParams {
+		p := ParameterDefinitions(in).FindByName(pathParam.name)
 		if p == nil {
 			return nil, fmt.Errorf("path '%s' refers to parameter '%s', which doesn't exist in specification",
-				path, name)
+				path, pathParam.name)
 		}
+		p.Wildcard = pathParam.wildcard
 		out[i] = *p
 	}
 	return out, nil

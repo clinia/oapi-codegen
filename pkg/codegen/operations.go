@@ -31,6 +31,7 @@ type ParameterDefinition struct {
 	ParamName string // The original json parameter name, eg param_name
 	In        string // Where the parameter is defined - path, header, cookie, query
 	Required  bool   // Is this a required parameter?
+	Wildcard  bool   // Is this a wildcard parameter?
 	Spec      *openapi3.Parameter
 	Schema    Schema
 }
