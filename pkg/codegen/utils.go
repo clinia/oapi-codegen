@@ -479,9 +479,16 @@ func OrderedParamsFromUri(uri string) []pathParam {
 	matches := pathParamRE.FindAllStringSubmatch(uri, -1)
 	result := make([]pathParam, len(matches))
 	for i, m := range matches {
-		result[i] = pathParam{
-			name:     m[1],
-			wildcard: m[2] == "=*",
+		if wildcard := m[2] == "=*"; wildcard {
+			result[i] = pathParam{
+				name:     m[1] + m[2],
+				wildcard: wildcard,
+			}
+		} else {
+			result[i] = pathParam{
+				name:     m[1],
+				wildcard: wildcard,
+			}
 		}
 	}
 
