@@ -27,9 +27,10 @@ import (
 )
 
 var (
-	pathParamRE    *regexp.Regexp
-	predeclaredSet map[string]struct{}
-	separatorSet   map[rune]struct{}
+	pathParamRE             *regexp.Regexp
+	wildcardOnlyPathParamRE *regexp.Regexp
+	predeclaredSet          map[string]struct{}
+	separatorSet            map[rune]struct{}
 )
 
 type pathParam struct {
@@ -40,6 +41,7 @@ type pathParam struct {
 
 func init() {
 	pathParamRE = regexp.MustCompile(`{[.;?]?([^{}=*]+)(=?\*)?}`)
+	wildcardOnlyPathParamRE = regexp.MustCompile(`{[.;?]?([^{}=*]+)(=?\*)}`)
 
 	predeclaredIdentifiers := []string{
 		// Types
@@ -431,7 +433,12 @@ func SwaggerUriToFiberUri(uri string) string {
 //	{?param}
 //	{?param*}
 func SwaggerUriToChiUri(uri string) string {
-	return pathParamRE.ReplaceAllString(uri, "{$1}")
+	i := wildcardOnlyPathParamRE.FindAllStringIndex(uri, -1)
+	if len(i) > 1 {
+		panic("chi does not support multiple wildcards in a single path")
+	}
+
+	return pathParamRE.ReplaceAllString(wildcardOnlyPathParamRE.ReplaceAllString(uri, "*"), "{$1}")
 }
 
 // SwaggerUriToGinUri converts a swagger style path URI with parameters to a

@@ -111,6 +111,27 @@ func TestExamplePetStoreCodeGenerationWithUserTemplates(t *testing.T) {
 	assert.Contains(t, code, "//blah")
 }
 
+func TestChiWildcardParam(t *testing.T) {
+	spec := "test_specs/petstore-with-wildcard.yml"
+	swagger, err := util.LoadSwagger(spec)
+	require.NoError(t, err)
+
+	// Input vars for code generation:
+	packageName := "api"
+	opts := Configuration{
+		PackageName: packageName,
+		Generate: GenerateOptions{
+			Models:    true,
+			ChiServer: true,
+			Strict:    true,
+		},
+	}
+
+	code, err := Generate(swagger, opts)
+	require.NoError(t, err)
+	assert.Contains(t, code, "r.Get(options.BaseURL+\"/pets/{id}/*\"")
+}
+
 func TestExamplePetStoreParseFunction(t *testing.T) {
 
 	bodyBytes := []byte(`{"id": 5, "name": "testpet", "tag": "cat"}`)
