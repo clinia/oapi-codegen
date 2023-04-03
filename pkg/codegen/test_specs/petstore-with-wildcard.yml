@@ -27,7 +27,7 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: nested
+        - name: nested=*
           in: path
           description: Nested path
           required: true

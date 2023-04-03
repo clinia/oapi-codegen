@@ -296,7 +296,7 @@ func TestOrderedParamsFromUri(t *testing.T) {
 			wildcard: false,
 		},
 		{
-			name:     "param4",
+			name:     "param4=*",
 			wildcard: true,
 		},
 	}, result)
