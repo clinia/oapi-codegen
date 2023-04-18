@@ -48,28 +48,45 @@ paths:
                 $ref: '#/components/schemas/Error'
 components:
   schemas:
-    Pet:
+    Dog:
       allOf:
-        - $ref: '#/components/schemas/NewPet'
-        - required:
-            - id
+        - $ref: '#/components/schemas/BasePet'
+        - type: object
           properties:
-            id:
-              type: integer
-              format: int64
-              description: Unique id of the pet
-
-    NewPet:
+            bark:
+              type: string
+              description: The sound a dog makes
+    Cat:
+      allOf:
+        - $ref: '#/components/schemas/BasePet'
+        - type: object
+          properties:
+            meow:
+              type: string
+              description: The sound a cat makes
+    BasePet:
       required:
-        - name
+        - id
       properties:
-        name:
+        type:
           type: string
-          description: Name of the pet
-        tag:
-          type: string
-          description: Type of the pet
-
+          description: The type of animal
+          enum:
+            - cat
+            - dog
+        id:
+          type: integer
+          format: int64
+          description: Unique id of the pet
+    Pet:
+      oneOf:
+        - $ref: '#/components/schemas/Dog'
+        - $ref: '#/components/schemas/Cat'
+      discriminator:
+        propertyName: type
+        mapping:
+          cat: '#/components/schemas/Cat'
+          dog: '#/components/schemas/Dog'
     Error:
       required:
         - code

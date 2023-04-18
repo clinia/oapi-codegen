@@ -69,6 +69,8 @@ func (im importMap) GoImports() []string {
 
 var importMapping importMap
 
+var generatedUnionTypes = map[string]TypeDefinition{}
+
 func constructImportMapping(importMapping map[string]string) importMap {
 	var (
 		pathToName = map[string]string{}
@@ -784,6 +786,10 @@ func GenerateUnionBoilerplate(t *template.Template, typeDefs []TypeDefinition) (
 		Types []TypeDefinition
 	}{
 		Types: filteredTypes,
+	}
+
+	for _, v := range filteredTypes {
+		generatedUnionTypes[v.TypeName] = v
 	}
 
 	return GenerateTemplates([]string{"union.tmpl"}, t, context)

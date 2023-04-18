@@ -465,6 +465,16 @@ func (r ResponseContentDefinition) NameTagOrContentType() string {
 	return SchemaNameToTypeName(r.ContentType)
 }
 
+func (r ResponseContentDefinition) ReferencesUnionType() bool {
+	referencedType := r.Schema.TypeDecl()
+	if referencedType == "" {
+		return false
+	}
+
+	_, ok := generatedUnionTypes[referencedType]
+	return ok
+}
+
 type ResponseHeaderDefinition struct {
 	Name   string
 	GoName string
