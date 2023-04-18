@@ -130,6 +130,7 @@ func TestChiWildcardParam(t *testing.T) {
 	code, err := Generate(swagger, opts)
 	require.NoError(t, err)
 	assert.Contains(t, code, "r.Get(options.BaseURL+\"/pets/{id}/*\"")
+	assert.Contains(t, code, "func (t FindPetByID200JSONResponse) MarshalJSON() ([]byte, error) {")
 }
 
 func TestExamplePetStoreParseFunction(t *testing.T) {
