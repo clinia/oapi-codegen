@@ -249,6 +249,17 @@ func GenerateGoSchema(sref *openapi3.SchemaRef, path []string) (Schema, error) {
 		OAPISchema:  schema,
 	}
 
+	// Check for custom Go type extension
+	if extension, ok := schema.Extensions[extPropGoType]; ok {
+		typeName, err := extTypeName(extension)
+		if err != nil {
+			return outSchema, fmt.Errorf("invalid value for %q: %w", extPropGoType, err)
+		}
+		outSchema.GoType = typeName
+		outSchema.DefineViaAlias = true
+		return outSchema, nil
+	}
+
 	// AllOf is interesting, and useful. It's the union of a number of other
 	// schemas. A common usage is to create a union of an object with an ID,
 	// so that in a RESTful paradigm, the Create operation can return
@@ -260,17 +271,6 @@ func GenerateGoSchema(sref *openapi3.SchemaRef, path []string) (Schema, error) {
 		}
 		mergedSchema.OAPISchema = schema
 		return mergedSchema, nil
-	}
-
-	// Check for custom Go type extension
-	if extension, ok := schema.Extensions[extPropGoType]; ok {
-		typeName, err := extTypeName(extension)
-		if err != nil {
-			return outSchema, fmt.Errorf("invalid value for %q: %w", extPropGoType, err)
-		}
-		outSchema.GoType = typeName
-		outSchema.DefineViaAlias = true
-		return outSchema, nil
 	}
 
 	// Schema type and format, eg. string / binary
