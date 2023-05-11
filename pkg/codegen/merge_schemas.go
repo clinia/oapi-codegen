@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
+	"github.com/samber/lo"
 )
 
 // MergeSchemas merges all the fields in the schemas supplied into one giant schema.
@@ -37,12 +38,31 @@ func mergeSchemas(allOf []*openapi3.SchemaRef, path []string) (Schema, error) {
 		if err != nil {
 			return Schema{}, err
 		}
+
 		schema, err = mergeOpenapiSchemas(schema, oneOfSchema, true)
 		if err != nil {
 			return Schema{}, fmt.Errorf("error merging schemas for AllOf: %w", err)
 		}
 	}
-	return GenerateGoSchema(openapi3.NewSchemaRef("", &schema), path)
+	sch, err := GenerateGoSchema(openapi3.NewSchemaRef("", &schema), path)
+	if err != nil {
+		return Schema{}, err
+	}
+
+	return sch, nil
+}
+
+func getGoType(schema openapi3.Schema) (string, bool) {
+	if extension, ok := schema.Extensions[extPropGoType]; ok {
+		typeName, err := extTypeName(extension)
+		if err != nil {
+			return "", false
+		}
+
+		return typeName, true
+	}
+
+	return "", false
 }
 
 // valueWithPropagatedRef returns a copy of ref schema with its Properties refs
@@ -222,6 +242,21 @@ func mergeOpenapiSchemas(s1, s2 openapi3.Schema, allOf bool) (openapi3.Schema, e
 	// Allow discriminators for allOf merges, but disallow for one/anyOfs.
 	if !allOf && (s1.Discriminator != nil || s2.Discriminator != nil) {
 		return openapi3.Schema{}, errors.New("merging two schemas with discriminators is not supported")
+	}
+
+	if allOf {
+		// Add all embedded
+		embeddedTypes := []string{}
+
+		for _, s := range []openapi3.Schema{s1, s2} {
+			t, ok := getGoType(s)
+			if ok {
+				embeddedTypes = append(embeddedTypes, t)
+			}
+		}
+
+		result.Extensions[extPropEmbeddedGoTypes] = lo.Uniq(embeddedTypes)
+		delete(result.Extensions, extPropGoType)
 	}
 
 	return result, nil
