@@ -18,6 +18,7 @@ type Schema struct {
 
 	EnumValues map[string]string // Enum values
 
+	EmbeddedTypes            []string         // Embedded types
 	Properties               []Property       // For an object, the fields with names
 	HasAdditionalProperties  bool             // Whether we support additional properties
 	AdditionalPropertiesType *Schema          // And if we do, their type
@@ -247,6 +248,13 @@ func GenerateGoSchema(sref *openapi3.SchemaRef, path []string) (Schema, error) {
 	outSchema := Schema{
 		Description: schema.Description,
 		OAPISchema:  schema,
+	}
+
+	if extension, ok := schema.Extensions[extPropEmbeddedGoTypes]; ok {
+		embeddedTypes, ok := extension.([]string)
+		if ok {
+			outSchema.EmbeddedTypes = embeddedTypes
+		}
 	}
 
 	// Check for custom Go type extension
@@ -699,6 +707,8 @@ func additionalPropertiesType(schema Schema) string {
 func GenStructFromSchema(schema Schema) string {
 	// Start out with struct {
 	objectParts := []string{"struct {"}
+	// Append all the embedded structs
+	objectParts = append(objectParts, schema.EmbeddedTypes...)
 	// Append all the field definitions
 	objectParts = append(objectParts, GenFieldsFromProperties(schema.Properties)...)
 	// Close the struct
