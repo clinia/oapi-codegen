@@ -59,6 +59,7 @@
         }
     {{end}}
 
+    {{$genDefaultEqual := false}}
     {{if $discriminator}}
         func (t {{.TypeName}}) Discriminator() (string, error) {
             var discriminator struct {
@@ -97,9 +98,36 @@
 
                 return reflect.DeepEqual(d1, d2)
             }
+        {{else}}
+            {{$genDefaultEqual = true}}
         {{end}}
+    {{else}}
+        {{$genDefaultEqual = true}}
     {{end}}
 
+    {{if $genDefaultEqual}}
+        // Equal returns true if the provided {{.TypeName}} is equal
+        func (t {{.TypeName}}) Equal(o {{.TypeName}}) bool {
+            equal := true
+            {{range .Schema.UnionElements}}
+                {{$element := . -}}
+                {
+                    d1, err1 := t.As{{.Method}}()
+                    d2, err2 := o.As{{.Method}}()
+
+                    if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+                        return false
+                    }
+
+                    if equal = reflect.DeepEqual(d1, d2); !equal {
+                        return false
+                    }
+                }
+            {{end}}
+
+            return equal
+        }
+    {{end}}
     {{if not .Schema.HasAdditionalProperties}}
 
     func (t {{.TypeName}}) MarshalJSON() ([]byte, error) {
