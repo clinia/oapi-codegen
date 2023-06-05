@@ -83,6 +83,20 @@
                         return nil, errors.New("unknown discriminator value: "+discriminator)
                 }
             }
+
+            func (t {{.TypeName}}) Equal(o {{.TypeName}}) bool {
+                d1, err := t.ValueByDiscriminator()
+                if err != nil {
+                    return false
+                }
+
+                d2, err := o.ValueByDiscriminator()
+                if err != nil {
+                    return false
+                }
+
+                return reflect.DeepEqual(d1, d2)
+            }
         {{end}}
     {{end}}
 

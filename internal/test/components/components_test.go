@@ -145,6 +145,24 @@ func TestOneOfWithDiscriminator(t *testing.T) {
 	assertJsonEqual(t, []byte(variant5), marshaled)
 }
 
+func TestOneOfWithDiscriminator_Equal(t *testing.T) {
+	const variant4 = `{"discriminator": "v4", "name": "123"}`
+	const variant5 = `{"discriminator": "v5", "id": 123}`
+	var first, second, third OneOfObject6
+
+	err := json.Unmarshal([]byte(variant4), &first)
+	assert.NoError(t, err)
+
+	err = json.Unmarshal([]byte(variant5), &second)
+	assert.NoError(t, err)
+
+	assert.False(t, first.Equal(second))
+
+	err = third.FromOneOfVariant4(OneOfVariant4{Name: "123"})
+	assert.NoError(t, err)
+	assert.True(t, first.Equal(third))
+}
+
 func TestOneOfWithDiscriminator_PartialMapping(t *testing.T) {
 	const variant4 = `{"discriminator": "v4", "name": "123"}`
 	const variant5 = `{"discriminator": "OneOfVariant5", "id": 321}`

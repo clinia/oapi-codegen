@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"reflect"
 
 	"github.com/clinia/oapi-codegen/pkg/runtime"
 )
@@ -1371,6 +1372,20 @@ func (t OneOfObject13) ValueByDiscriminator() (interface{}, error) {
 	}
 }
 
+func (t OneOfObject13) Equal(o OneOfObject13) bool {
+	d1, err := t.ValueByDiscriminator()
+	if err != nil {
+		return false
+	}
+
+	d2, err := o.ValueByDiscriminator()
+	if err != nil {
+		return false
+	}
+
+	return reflect.DeepEqual(d1, d2)
+}
+
 // AsOneOfObject20 returns the union data inside the OneOfObject2 as a OneOfObject20
 func (t OneOfObject2) AsOneOfObject20() (OneOfObject20, error) {
 	var body OneOfObject20
@@ -1748,6 +1763,20 @@ func (t OneOfObject5) ValueByDiscriminator() (interface{}, error) {
 	}
 }
 
+func (t OneOfObject5) Equal(o OneOfObject5) bool {
+	d1, err := t.ValueByDiscriminator()
+	if err != nil {
+		return false
+	}
+
+	d2, err := o.ValueByDiscriminator()
+	if err != nil {
+		return false
+	}
+
+	return reflect.DeepEqual(d1, d2)
+}
+
 func (t OneOfObject5) MarshalJSON() ([]byte, error) {
 	b, err := t.union.MarshalJSON()
 	return b, err
@@ -1835,6 +1864,20 @@ func (t OneOfObject6) ValueByDiscriminator() (interface{}, error) {
 	default:
 		return nil, errors.New("unknown discriminator value: " + discriminator)
 	}
+}
+
+func (t OneOfObject6) Equal(o OneOfObject6) bool {
+	d1, err := t.ValueByDiscriminator()
+	if err != nil {
+		return false
+	}
+
+	d2, err := o.ValueByDiscriminator()
+	if err != nil {
+		return false
+	}
+
+	return reflect.DeepEqual(d1, d2)
 }
 
 func (t OneOfObject6) MarshalJSON() ([]byte, error) {
@@ -1926,6 +1969,20 @@ func (t OneOfObject61) ValueByDiscriminator() (interface{}, error) {
 	}
 }
 
+func (t OneOfObject61) Equal(o OneOfObject61) bool {
+	d1, err := t.ValueByDiscriminator()
+	if err != nil {
+		return false
+	}
+
+	d2, err := o.ValueByDiscriminator()
+	if err != nil {
+		return false
+	}
+
+	return reflect.DeepEqual(d1, d2)
+}
+
 func (t OneOfObject61) MarshalJSON() ([]byte, error) {
 	b, err := t.union.MarshalJSON()
 	return b, err
@@ -2013,6 +2070,20 @@ func (t OneOfObject62) ValueByDiscriminator() (interface{}, error) {
 	default:
 		return nil, errors.New("unknown discriminator value: " + discriminator)
 	}
+}
+
+func (t OneOfObject62) Equal(o OneOfObject62) bool {
+	d1, err := t.ValueByDiscriminator()
+	if err != nil {
+		return false
+	}
+
+	d2, err := o.ValueByDiscriminator()
+	if err != nil {
+		return false
+	}
+
+	return reflect.DeepEqual(d1, d2)
 }
 
 func (t OneOfObject62) MarshalJSON() ([]byte, error) {
@@ -2264,6 +2335,20 @@ func (t OneOfObject9) ValueByDiscriminator() (interface{}, error) {
 	default:
 		return nil, errors.New("unknown discriminator value: " + discriminator)
 	}
+}
+
+func (t OneOfObject9) Equal(o OneOfObject9) bool {
+	d1, err := t.ValueByDiscriminator()
+	if err != nil {
+		return false
+	}
+
+	d2, err := o.ValueByDiscriminator()
+	if err != nil {
+		return false
+	}
+
+	return reflect.DeepEqual(d1, d2)
 }
 
 func (t OneOfObject9) MarshalJSON() ([]byte, error) {
