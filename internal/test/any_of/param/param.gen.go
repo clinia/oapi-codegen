@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"reflect"
 	"strings"
 
 	"github.com/deepmap/oapi-codegen/pkg/runtime"
@@ -101,6 +102,39 @@ func (t *Test) MergeTest1(v Test1) error {
 	return err
 }
 
+// Equal returns true if the provided Test is equal
+func (t Test) Equal(o Test) bool {
+	equal := true
+
+	{
+		d1, err1 := t.AsTest0()
+		d2, err2 := o.AsTest0()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	{
+		d1, err1 := t.AsTest1()
+		d2, err2 := o.AsTest1()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	return equal
+}
+
 func (t Test) MarshalJSON() ([]byte, error) {
 	b, err := t.union.MarshalJSON()
 	return b, err
@@ -161,6 +195,39 @@ func (t *Test2) MergeTest21(v Test21) error {
 	merged, err := runtime.JsonMerge(t.union, b)
 	t.union = merged
 	return err
+}
+
+// Equal returns true if the provided Test2 is equal
+func (t Test2) Equal(o Test2) bool {
+	equal := true
+
+	{
+		d1, err1 := t.AsTest20()
+		d2, err2 := o.AsTest20()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	{
+		d1, err1 := t.AsTest21()
+		d2, err2 := o.AsTest21()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	return equal
 }
 
 func (t Test2) MarshalJSON() ([]byte, error) {
