@@ -108,6 +108,45 @@ func TestOneOf(t *testing.T) {
 	assertJsonEqual(t, []byte(variant3), marshaled)
 }
 
+func TestOne_Equal(t *testing.T) {
+	const variant1 = `{"name": "123"}`
+	const variant2 = `[1, 2, 3]`
+	const variant3 = `true`
+	var first, second, third OneOfObject1
+
+	err := json.Unmarshal([]byte(variant1), &first)
+	assert.NoError(t, err)
+
+	err = json.Unmarshal([]byte(variant2), &second)
+	assert.NoError(t, err)
+
+	err = json.Unmarshal([]byte(variant3), &third)
+	assert.NoError(t, err)
+
+	assert.False(t, first.Equal(second))
+	assert.False(t, first.Equal(third))
+	assert.False(t, second.Equal(third))
+
+	m := &OneOfObject1{}
+	err = m.FromOneOfVariant1(OneOfVariant1{Name: "123"})
+	assert.NoError(t, err)
+	assert.True(t, first.Equal(*m))
+	assert.False(t, second.Equal(*m))
+	assert.False(t, third.Equal(*m))
+
+	err = m.FromOneOfVariant2([]int{1, 2, 3})
+	assert.NoError(t, err)
+	assert.True(t, second.Equal(*m))
+	assert.False(t, first.Equal(*m))
+	assert.False(t, third.Equal(*m))
+
+	err = m.FromOneOfVariant3(true)
+	assert.NoError(t, err)
+	assert.True(t, third.Equal(*m))
+	assert.False(t, first.Equal(*m))
+	assert.False(t, second.Equal(*m))
+}
+
 func TestOneOfWithDiscriminator(t *testing.T) {
 	const variant4 = `{"discriminator": "v4", "name": "123"}`
 	const variant5 = `{"discriminator": "v5", "id": 123}`
@@ -143,6 +182,24 @@ func TestOneOfWithDiscriminator(t *testing.T) {
 	marshaled, err = json.Marshal(dst)
 	assert.NoError(t, err)
 	assertJsonEqual(t, []byte(variant5), marshaled)
+}
+
+func TestOneOfWithDiscriminator_Equal(t *testing.T) {
+	const variant4 = `{"discriminator": "v4", "name": "123"}`
+	const variant5 = `{"discriminator": "v5", "id": 123}`
+	var first, second, third OneOfObject6
+
+	err := json.Unmarshal([]byte(variant4), &first)
+	assert.NoError(t, err)
+
+	err = json.Unmarshal([]byte(variant5), &second)
+	assert.NoError(t, err)
+
+	assert.False(t, first.Equal(second))
+
+	err = third.FromOneOfVariant4(OneOfVariant4{Name: "123"})
+	assert.NoError(t, err)
+	assert.True(t, first.Equal(third))
 }
 
 func TestOneOfWithDiscriminator_PartialMapping(t *testing.T) {

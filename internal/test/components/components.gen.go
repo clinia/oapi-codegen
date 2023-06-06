@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"reflect"
 
 	"github.com/deepmap/oapi-codegen/pkg/runtime"
 )
@@ -864,6 +865,39 @@ func (t *AnyOfObject1) MergeOneOfVariant5(v OneOfVariant5) error {
 	return err
 }
 
+// Equal returns true if the provided AnyOfObject1 is equal
+func (t AnyOfObject1) Equal(o AnyOfObject1) bool {
+	equal := true
+
+	{
+		d1, err1 := t.AsOneOfVariant4()
+		d2, err2 := o.AsOneOfVariant4()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	{
+		d1, err1 := t.AsOneOfVariant5()
+		d2, err2 := o.AsOneOfVariant5()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	return equal
+}
+
 func (t AnyOfObject1) MarshalJSON() ([]byte, error) {
 	b, err := t.union.MarshalJSON()
 	return b, err
@@ -952,6 +986,52 @@ func (t *OneOfObject1) MergeOneOfVariant3(v OneOfVariant3) error {
 	return err
 }
 
+// Equal returns true if the provided OneOfObject1 is equal
+func (t OneOfObject1) Equal(o OneOfObject1) bool {
+	equal := true
+
+	{
+		d1, err1 := t.AsOneOfVariant1()
+		d2, err2 := o.AsOneOfVariant1()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	{
+		d1, err1 := t.AsOneOfVariant2()
+		d2, err2 := o.AsOneOfVariant2()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	{
+		d1, err1 := t.AsOneOfVariant3()
+		d2, err2 := o.AsOneOfVariant3()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	return equal
+}
+
 func (t OneOfObject1) MarshalJSON() ([]byte, error) {
 	b, err := t.union.MarshalJSON()
 	return b, err
@@ -1012,6 +1092,39 @@ func (t *OneOfObject10) MergeOneOfObject101(v OneOfObject101) error {
 	merged, err := runtime.JsonMerge(t.union, b)
 	t.union = merged
 	return err
+}
+
+// Equal returns true if the provided OneOfObject10 is equal
+func (t OneOfObject10) Equal(o OneOfObject10) bool {
+	equal := true
+
+	{
+		d1, err1 := t.AsOneOfObject100()
+		d2, err2 := o.AsOneOfObject100()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	{
+		d1, err1 := t.AsOneOfObject101()
+		d2, err2 := o.AsOneOfObject101()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	return equal
 }
 
 func (t OneOfObject10) MarshalJSON() ([]byte, error) {
@@ -1164,6 +1277,52 @@ func (t *OneOfObject11_AdditionalProperties) MergeOneOfObject112(v OneOfObject11
 	return err
 }
 
+// Equal returns true if the provided OneOfObject11_AdditionalProperties is equal
+func (t OneOfObject11_AdditionalProperties) Equal(o OneOfObject11_AdditionalProperties) bool {
+	equal := true
+
+	{
+		d1, err1 := t.AsOneOfObject110()
+		d2, err2 := o.AsOneOfObject110()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	{
+		d1, err1 := t.AsOneOfObject111()
+		d2, err2 := o.AsOneOfObject111()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	{
+		d1, err1 := t.AsOneOfObject112()
+		d2, err2 := o.AsOneOfObject112()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	return equal
+}
+
 func (t OneOfObject11_AdditionalProperties) MarshalJSON() ([]byte, error) {
 	b, err := t.union.MarshalJSON()
 	return b, err
@@ -1278,6 +1437,65 @@ func (t *OneOfObject12) MergeOneOfVariant4(v OneOfVariant4) error {
 	return err
 }
 
+// Equal returns true if the provided OneOfObject12 is equal
+func (t OneOfObject12) Equal(o OneOfObject12) bool {
+	equal := true
+
+	{
+		d1, err1 := t.AsOneOfObject120()
+		d2, err2 := o.AsOneOfObject120()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	{
+		d1, err1 := t.AsOneOfObject121()
+		d2, err2 := o.AsOneOfObject121()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	{
+		d1, err1 := t.AsOneOfVariant3()
+		d2, err2 := o.AsOneOfVariant3()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	{
+		d1, err1 := t.AsOneOfVariant4()
+		d2, err2 := o.AsOneOfVariant4()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	return equal
+}
+
 func (t OneOfObject12) MarshalJSON() ([]byte, error) {
 	b, err := t.union.MarshalJSON()
 	return b, err
@@ -1371,6 +1589,20 @@ func (t OneOfObject13) ValueByDiscriminator() (interface{}, error) {
 	}
 }
 
+func (t OneOfObject13) Equal(o OneOfObject13) bool {
+	d1, err := t.ValueByDiscriminator()
+	if err != nil {
+		return false
+	}
+
+	d2, err := o.ValueByDiscriminator()
+	if err != nil {
+		return false
+	}
+
+	return reflect.DeepEqual(d1, d2)
+}
+
 // AsOneOfObject20 returns the union data inside the OneOfObject2 as a OneOfObject20
 func (t OneOfObject2) AsOneOfObject20() (OneOfObject20, error) {
 	var body OneOfObject20
@@ -1447,6 +1679,52 @@ func (t *OneOfObject2) MergeOneOfObject22(v OneOfObject22) error {
 	merged, err := runtime.JsonMerge(t.union, b)
 	t.union = merged
 	return err
+}
+
+// Equal returns true if the provided OneOfObject2 is equal
+func (t OneOfObject2) Equal(o OneOfObject2) bool {
+	equal := true
+
+	{
+		d1, err1 := t.AsOneOfObject20()
+		d2, err2 := o.AsOneOfObject20()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	{
+		d1, err1 := t.AsOneOfObject21()
+		d2, err2 := o.AsOneOfObject21()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	{
+		d1, err1 := t.AsOneOfObject22()
+		d2, err2 := o.AsOneOfObject22()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	return equal
 }
 
 func (t OneOfObject2) MarshalJSON() ([]byte, error) {
@@ -1537,6 +1815,52 @@ func (t *OneOfObject3_Union) MergeOneOfVariant3(v OneOfVariant3) error {
 	return err
 }
 
+// Equal returns true if the provided OneOfObject3_Union is equal
+func (t OneOfObject3_Union) Equal(o OneOfObject3_Union) bool {
+	equal := true
+
+	{
+		d1, err1 := t.AsOneOfVariant1()
+		d2, err2 := o.AsOneOfVariant1()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	{
+		d1, err1 := t.AsOneOfVariant2()
+		d2, err2 := o.AsOneOfVariant2()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	{
+		d1, err1 := t.AsOneOfVariant3()
+		d2, err2 := o.AsOneOfVariant3()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	return equal
+}
+
 func (t OneOfObject3_Union) MarshalJSON() ([]byte, error) {
 	b, err := t.union.MarshalJSON()
 	return b, err
@@ -1623,6 +1947,52 @@ func (t *OneOfObject4) MergeOneOfVariant3(v OneOfVariant3) error {
 	merged, err := runtime.JsonMerge(t.union, b)
 	t.union = merged
 	return err
+}
+
+// Equal returns true if the provided OneOfObject4 is equal
+func (t OneOfObject4) Equal(o OneOfObject4) bool {
+	equal := true
+
+	{
+		d1, err1 := t.AsOneOfVariant1()
+		d2, err2 := o.AsOneOfVariant1()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	{
+		d1, err1 := t.AsOneOfVariant2()
+		d2, err2 := o.AsOneOfVariant2()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	{
+		d1, err1 := t.AsOneOfVariant3()
+		d2, err2 := o.AsOneOfVariant3()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	return equal
 }
 
 func (t OneOfObject4) MarshalJSON() ([]byte, error) {
@@ -1748,6 +2118,20 @@ func (t OneOfObject5) ValueByDiscriminator() (interface{}, error) {
 	}
 }
 
+func (t OneOfObject5) Equal(o OneOfObject5) bool {
+	d1, err := t.ValueByDiscriminator()
+	if err != nil {
+		return false
+	}
+
+	d2, err := o.ValueByDiscriminator()
+	if err != nil {
+		return false
+	}
+
+	return reflect.DeepEqual(d1, d2)
+}
+
 func (t OneOfObject5) MarshalJSON() ([]byte, error) {
 	b, err := t.union.MarshalJSON()
 	return b, err
@@ -1835,6 +2219,20 @@ func (t OneOfObject6) ValueByDiscriminator() (interface{}, error) {
 	default:
 		return nil, errors.New("unknown discriminator value: " + discriminator)
 	}
+}
+
+func (t OneOfObject6) Equal(o OneOfObject6) bool {
+	d1, err := t.ValueByDiscriminator()
+	if err != nil {
+		return false
+	}
+
+	d2, err := o.ValueByDiscriminator()
+	if err != nil {
+		return false
+	}
+
+	return reflect.DeepEqual(d1, d2)
 }
 
 func (t OneOfObject6) MarshalJSON() ([]byte, error) {
@@ -1926,6 +2324,20 @@ func (t OneOfObject61) ValueByDiscriminator() (interface{}, error) {
 	}
 }
 
+func (t OneOfObject61) Equal(o OneOfObject61) bool {
+	d1, err := t.ValueByDiscriminator()
+	if err != nil {
+		return false
+	}
+
+	d2, err := o.ValueByDiscriminator()
+	if err != nil {
+		return false
+	}
+
+	return reflect.DeepEqual(d1, d2)
+}
+
 func (t OneOfObject61) MarshalJSON() ([]byte, error) {
 	b, err := t.union.MarshalJSON()
 	return b, err
@@ -2015,6 +2427,20 @@ func (t OneOfObject62) ValueByDiscriminator() (interface{}, error) {
 	}
 }
 
+func (t OneOfObject62) Equal(o OneOfObject62) bool {
+	d1, err := t.ValueByDiscriminator()
+	if err != nil {
+		return false
+	}
+
+	d2, err := o.ValueByDiscriminator()
+	if err != nil {
+		return false
+	}
+
+	return reflect.DeepEqual(d1, d2)
+}
+
 func (t OneOfObject62) MarshalJSON() ([]byte, error) {
 	b, err := t.union.MarshalJSON()
 	return b, err
@@ -2077,6 +2503,39 @@ func (t *OneOfObject7_Item) MergeOneOfVariant2(v OneOfVariant2) error {
 	return err
 }
 
+// Equal returns true if the provided OneOfObject7_Item is equal
+func (t OneOfObject7_Item) Equal(o OneOfObject7_Item) bool {
+	equal := true
+
+	{
+		d1, err1 := t.AsOneOfVariant1()
+		d2, err2 := o.AsOneOfVariant1()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	{
+		d1, err1 := t.AsOneOfVariant2()
+		d2, err2 := o.AsOneOfVariant2()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	return equal
+}
+
 func (t OneOfObject7_Item) MarshalJSON() ([]byte, error) {
 	b, err := t.union.MarshalJSON()
 	return b, err
@@ -2137,6 +2596,39 @@ func (t *OneOfObject8) MergeOneOfVariant2(v OneOfVariant2) error {
 	merged, err := runtime.JsonMerge(t.union, b)
 	t.union = merged
 	return err
+}
+
+// Equal returns true if the provided OneOfObject8 is equal
+func (t OneOfObject8) Equal(o OneOfObject8) bool {
+	equal := true
+
+	{
+		d1, err1 := t.AsOneOfVariant1()
+		d2, err2 := o.AsOneOfVariant1()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	{
+		d1, err1 := t.AsOneOfVariant2()
+		d2, err2 := o.AsOneOfVariant2()
+
+		if err1 != nil && err2 == nil || err1 == nil && err2 != nil {
+			return false
+		}
+
+		if equal = reflect.DeepEqual(d1, d2); !equal {
+			return false
+		}
+	}
+
+	return equal
 }
 
 func (t OneOfObject8) MarshalJSON() ([]byte, error) {
@@ -2264,6 +2756,20 @@ func (t OneOfObject9) ValueByDiscriminator() (interface{}, error) {
 	default:
 		return nil, errors.New("unknown discriminator value: " + discriminator)
 	}
+}
+
+func (t OneOfObject9) Equal(o OneOfObject9) bool {
+	d1, err := t.ValueByDiscriminator()
+	if err != nil {
+		return false
+	}
+
+	d2, err := o.ValueByDiscriminator()
+	if err != nil {
+		return false
+	}
+
+	return reflect.DeepEqual(d1, d2)
 }
 
 func (t OneOfObject9) MarshalJSON() ([]byte, error) {
