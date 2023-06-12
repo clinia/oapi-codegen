@@ -47,7 +47,24 @@
                         union: t.union,
                     }
                     return p.MarshalJSON()
-                }{{end -}}
+                }{{else}}
+                func (t {{$receiverTypeName}}) MarshalJSON() ([]byte, error) {
+                    o := {{.Schema.TypeDecl}}(t)
+                    return json.Marshal(o)
+                }
+
+                func (t *{{$receiverTypeName}}) UnmarshalJSON(data []byte) error {
+                    o := {{.Schema.TypeDecl}}{}
+                    err := json.Unmarshal(data, &o)
+                    if err != nil {
+                        return err
+                    }
+
+                    *t = {{$receiverTypeName}}(o)
+                    return nil
+                }
+
+                {{end -}}
             {{else}}io.Reader{{end}}
             {{else -}}
                 type {{$receiverTypeName}} struct {
