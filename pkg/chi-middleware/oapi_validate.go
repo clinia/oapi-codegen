@@ -46,11 +46,12 @@ func OapiRequestValidatorWithOptions(swagger *openapi3.T, options *Options) func
 		log.Println("WARN: OapiRequestValidatorWithOptions called with an OpenAPI spec that has `Servers` set. This may lead to an HTTP 400 with `no matching operation was found` when sending a valid request, as the validator performs `Host` header validation. If you're expecting `Host` header validation, you can silence this warning by setting `Options.SilenceServersWarning = true`. See https://github.com/clinia/oapi-codegen/issues/882 for more information.")
 	}
 
+	swagger.Paths = SwaggerPathsToGorillaPaths(swagger.Paths)
+
 	router, err := gorillamux.NewRouter(swagger)
 	if err != nil {
 		panic(err)
 	}
-	swagger.Paths = SwaggerPathsToGorillaPaths(swagger.Paths)
 
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

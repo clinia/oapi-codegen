@@ -474,7 +474,7 @@ func SwaggerUriToGorillaUri(uri string) string {
 	if len(i) > 1 {
 		panic("Gorilla does not support multiple wildcards in a single path")
 	}
-	return pathParamRE.ReplaceAllString(wildcardOnlyPathParamRE.ReplaceAllString(uri, "$1$2:.*"), "{$1}")
+	return pathParamRE.ReplaceAllString(wildcardOnlyPathParamRE.ReplaceAllString(uri, "{$1$2:.*}"), "{$1}")
 }
 
 // OrderedParamsFromUri returns the argument names, in order, in a given URI string, so for
