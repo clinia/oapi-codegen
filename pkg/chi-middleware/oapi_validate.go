@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/clinia/oapi-codegen/pkg/codegen"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/getkin/kin-openapi/routers"
@@ -49,6 +50,7 @@ func OapiRequestValidatorWithOptions(swagger *openapi3.T, options *Options) func
 	if err != nil {
 		panic(err)
 	}
+	swagger.Paths = SwaggerPathsToGorillaPaths(swagger.Paths)
 
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -68,6 +70,14 @@ func OapiRequestValidatorWithOptions(swagger *openapi3.T, options *Options) func
 		})
 	}
 
+}
+
+func SwaggerPathsToGorillaPaths(paths openapi3.Paths) openapi3.Paths {
+	newPaths := openapi3.Paths{}
+	for path, pathItem := range paths {
+		newPaths[codegen.SwaggerUriToGorillaUri(path)] = pathItem
+	}
+	return newPaths
 }
 
 // This function is called from the middleware above and actually does the work

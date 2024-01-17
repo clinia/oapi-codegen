@@ -40,8 +40,8 @@ type pathParam struct {
 }
 
 func init() {
-	pathParamRE = regexp.MustCompile(`{[.;?]?([^{}=*]+)(=?\*)?}`)
-	wildcardOnlyPathParamRE = regexp.MustCompile(`{[.;?]?([^{}=*]+)(=?\*)}`)
+	pathParamRE = regexp.MustCompile(`{[.;?]?([^{}*]+)\*?}`)
+	wildcardOnlyPathParamRE = regexp.MustCompile(`{[.;?]?([^{}]+)(=?\*)}`)
 
 	predeclaredIdentifiers := []string{
 		// Types
@@ -470,7 +470,11 @@ func SwaggerUriToGinUri(uri string) string {
 //	{?param}
 //	{?param*}
 func SwaggerUriToGorillaUri(uri string) string {
-	return pathParamRE.ReplaceAllString(uri, "{$1}")
+	i := wildcardOnlyPathParamRE.FindAllStringIndex(uri, -1)
+	if len(i) > 1 {
+		panic("Gorilla does not support multiple wildcards in a single path")
+	}
+	return pathParamRE.ReplaceAllString(wildcardOnlyPathParamRE.ReplaceAllString(uri, "$1$2:.*"), "{$1}")
 }
 
 // OrderedParamsFromUri returns the argument names, in order, in a given URI string, so for
