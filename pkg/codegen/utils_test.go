@@ -263,6 +263,28 @@ func TestSwaggerUriToGinUri(t *testing.T) {
 	assert.Equal(t, "/path/:arg/foo", SwaggerUriToGinUri("/path/{?arg*}/foo"))
 }
 
+func TestSwaggerUriToChiUri(t *testing.T) {
+	assert.Equal(t, "/path", SwaggerUriToChiUri("/path"))
+	assert.Equal(t, "/path/{arg}", SwaggerUriToChiUri("/path/{arg}"))
+	assert.Equal(t, "/path/{arg1}/{arg2}", SwaggerUriToChiUri("/path/{arg1}/{arg2}"))
+	assert.Equal(t, "/path/{arg1}/{arg2}/foo", SwaggerUriToChiUri("/path/{arg1}/{arg2}/foo"))
+
+	// Make sure all the exploded and alternate formats match too
+	assert.Equal(t, "/path/{arg}/foo", SwaggerUriToChiUri("/path/{arg}/foo"))
+	assert.Equal(t, "/path/{arg}/foo", SwaggerUriToChiUri("/path/{arg*}/foo"))
+	assert.Equal(t, "/path/{arg}/foo", SwaggerUriToChiUri("/path/{.arg}/foo"))
+	assert.Equal(t, "/path/{arg}/foo", SwaggerUriToChiUri("/path/{.arg*}/foo"))
+	assert.Equal(t, "/path/{arg}/foo", SwaggerUriToChiUri("/path/{;arg}/foo"))
+	assert.Equal(t, "/path/{arg}/foo", SwaggerUriToChiUri("/path/{;arg*}/foo"))
+	assert.Equal(t, "/path/{arg}/foo", SwaggerUriToChiUri("/path/{?arg}/foo"))
+	assert.Equal(t, "/path/{arg}/foo", SwaggerUriToChiUri("/path/{?arg*}/foo"))
+
+	// Wildcard param
+	assert.Equal(t, "/path/*", SwaggerUriToChiUri("/path/{arg1=*}"))
+	assert.Equal(t, "/path/{arg1}/*", SwaggerUriToChiUri("/path/{arg1}/{arg2=*}"))
+	assert.Panics(t, func() { SwaggerUriToChiUri("/path/{arg1=*}/{arg2=*}") }, "chi: wildcard '{param=*}' must be the last pattern")
+}
+
 func TestSwaggerUriToGorillaUri(t *testing.T) { // TODO
 	assert.Equal(t, "/path", SwaggerUriToGorillaUri("/path"))
 	assert.Equal(t, "/path/{arg}", SwaggerUriToGorillaUri("/path/{arg}"))
@@ -278,6 +300,13 @@ func TestSwaggerUriToGorillaUri(t *testing.T) { // TODO
 	assert.Equal(t, "/path/{arg}/foo", SwaggerUriToGorillaUri("/path/{;arg*}/foo"))
 	assert.Equal(t, "/path/{arg}/foo", SwaggerUriToGorillaUri("/path/{?arg}/foo"))
 	assert.Equal(t, "/path/{arg}/foo", SwaggerUriToGorillaUri("/path/{?arg*}/foo"))
+
+	// Wildcard param
+	assert.Equal(t, "/path/{arg=*:.*}", SwaggerUriToGorillaUri("/path/{arg=*}"))
+	assert.Equal(t, "/path/{arg=*:.*}", SwaggerUriToGorillaUri("/path/{.arg=*}"))
+	assert.Equal(t, "/path/{arg1}/{arg2=*:.*}", SwaggerUriToGorillaUri("/path/{arg1}/{arg2=*}"))
+	assert.Panics(t, func() { SwaggerUriToGorillaUri("/path/{arg1=*}/{arg2=*}") }, "gorilla: wildcard '{param=*}' must be the last pattern")
+
 }
 
 func TestOrderedParamsFromUri(t *testing.T) {

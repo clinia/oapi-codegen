@@ -402,4 +402,55 @@ func testRequestValidatorBasicFunctions(t *testing.T, r *chi.Mux) {
 		called = false
 	}
 
+	// Install a request handler for /resource/{type}/{.?id*}. We want to make sure it doesn't
+	// get called.
+	r.Get("/resource/{type}/{.id*}", func(w http.ResponseWriter, r *http.Request) {
+		called = true
+	})
+	// Send a good request with parameters
+	{
+		rec := doGet(t, r, "http://deepmap.ai/resource/type1/id1")
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.True(t, called, "Handler should have been called")
+		called = false
+	}
+	// Send a good request with parameters
+	{
+		rec := doGet(t, r, "http://deepmap.ai/resource/type1/id1/etc")
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		assert.False(t, called, "Handler should not have been called")
+	}
+
+	// Wildcard
+	// Install a request handler for /wildcardparam/{type}/*. We want to make sure it doesn't
+	// get called.
+	r.Get("/wildcardparam/{type}/*", func(w http.ResponseWriter, r *http.Request) {
+		called = true
+	})
+	// Send a good request with a wildcard parameter
+	{
+		rec := doGet(t, r, "http://deepmap.ai/wildcardparam/1/id1")
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.True(t, called, "Handler should have been called")
+		called = false
+	}
+	// Send a good request with a wildcard parameter
+	{
+		rec := doGet(t, r, "http://deepmap.ai/wildcardparam/1/id1/etc1/etc2")
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.True(t, called, "Handler should have been called")
+		called = false
+	}
+	// Send a good request with a wildcard parameter but missing type
+	{
+		rec := doGet(t, r, "http://deepmap.ai/wildcardparam/id1/etc1/etc2")
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		assert.False(t, called, "Handler should not have been called")
+	}
+	// Send a good request with type but missing wildcard
+	{
+		rec := doGet(t, r, "http://deepmap.ai/wildcardparam/1")
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		assert.False(t, called, "Handler should not have been called")
+	}
 }

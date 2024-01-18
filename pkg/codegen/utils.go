@@ -40,8 +40,8 @@ type pathParam struct {
 }
 
 func init() {
-	pathParamRE = regexp.MustCompile(`{[.;?]?([^{}*]+)\*?}`)
-	wildcardOnlyPathParamRE = regexp.MustCompile(`{[.;?]?([^{}]+)(=?\*)}`)
+	pathParamRE = regexp.MustCompile(`{[.;?]?([^{}=*]+)(=?\*)?}`)
+	wildcardOnlyPathParamRE = regexp.MustCompile(`{[.;?]?([^{}=*]+)(=\*)}`)
 
 	predeclaredIdentifiers := []string{
 		// Types
@@ -433,9 +433,10 @@ func SwaggerUriToFiberUri(uri string) string {
 //	{?param}
 //	{?param*}
 func SwaggerUriToChiUri(uri string) string {
-	i := wildcardOnlyPathParamRE.FindAllStringIndex(uri, -1)
-	if len(i) > 1 {
-		panic("chi does not support multiple wildcards in a single path")
+	// Wildcard must be the last pattern
+	i := wildcardOnlyPathParamRE.FindStringIndex(uri)
+	if i != nil && i[1] != len(uri) {
+		panic("chi: wildcard '{param=*}' must be the last pattern")
 	}
 
 	return pathParamRE.ReplaceAllString(wildcardOnlyPathParamRE.ReplaceAllString(uri, "*"), "{$1}")
@@ -470,9 +471,10 @@ func SwaggerUriToGinUri(uri string) string {
 //	{?param}
 //	{?param*}
 func SwaggerUriToGorillaUri(uri string) string {
-	i := wildcardOnlyPathParamRE.FindAllStringIndex(uri, -1)
-	if len(i) > 1 {
-		panic("Gorilla does not support multiple wildcards in a single path")
+	// Wildcard must be the last pattern
+	i := wildcardOnlyPathParamRE.FindStringIndex(uri)
+	if i != nil && i[1] != len(uri) {
+		panic("gorilla: wildcard '{param=*}' must be the last pattern")
 	}
 	return pathParamRE.ReplaceAllString(wildcardOnlyPathParamRE.ReplaceAllString(uri, "{$1$2:.*}"), "{$1}")
 }
