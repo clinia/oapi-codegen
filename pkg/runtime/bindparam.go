@@ -24,6 +24,7 @@ import (
 	"time"
 
 	"github.com/clinia/oapi-codegen/pkg/types"
+	"github.com/samber/lo"
 )
 
 // BindStyledParameter binds a parameter as described in the Path Parameters
@@ -345,7 +346,17 @@ func BindQueryParameter(style string, explode bool, required bool, paramName str
 						return nil
 					}
 				}
-				err = bindSplitPartsToDestinationArray(values, output)
+
+				// Handle param values with multiple values split by comma.
+				// Basically be able to handle: ?includes=employs,association&includes=worksAt
+				splitValues := lo.Map(values, func(value string, _ int) []string {
+					return strings.Split(value, ",")
+				})
+				reducedValues := lo.Reduce(splitValues, func(agg []string, item []string, _ int) []string {
+					return append(agg, item...)
+				}, []string{})
+
+				err = bindSplitPartsToDestinationArray(reducedValues, output)
 			case reflect.Struct:
 				// This case is really annoying, and error prone, but the
 				// form style object binding doesn't tell us which arguments
