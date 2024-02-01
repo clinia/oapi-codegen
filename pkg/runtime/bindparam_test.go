@@ -333,6 +333,16 @@ func TestBindQueryParameter(t *testing.T) {
 		err := BindQueryParameter("form", true, false, "birthday", queryParams, &birthday)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, birthday)
+
+		// Explode array params with not exploded values
+		expectedInclude := []string{"employs", "worksAt", "belongsTo"}
+		var include *[]string
+		queryParams = url.Values{
+			"include": {"employs", "worksAt,belongsTo"},
+		}
+		err = BindQueryParameter("form", true, false, "include", queryParams, &include)
+		assert.NoError(t, err)
+		assert.Equal(t, expectedInclude, *include)
 	})
 
 	t.Run("optional", func(t *testing.T) {
