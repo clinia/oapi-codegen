@@ -104,7 +104,7 @@ func validateRequest(r *http.Request, router routers.Router, options *Options) (
 
 	if err := openapi3filter.ValidateRequest(context.Background(), requestValidationInput); err != nil {
 		me := openapi3.MultiError{}
-		if errors.As(err, &me) {
+		if errors.As(err, &me) && options.Options.MultiError {
 			errFunc := getMultiErrorHandlerFromOptions(options)
 			return errFunc(me)
 		}
@@ -112,6 +112,8 @@ func validateRequest(r *http.Request, router routers.Router, options *Options) (
 		switch e := err.(type) {
 		case *openapi3filter.RequestError:
 			// We've got a bad request
+			// Remove reference to schema
+			e.Reason = ""
 			// Split up the verbose error by lines and return the first one
 			// openapi errors seem to be multi-line with a decent message on the first
 			errorLines := strings.Split(e.Error(), "\n")
