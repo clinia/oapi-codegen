@@ -95,6 +95,56 @@ paths:
                     type: string
                   id:
                     type: integer
+  /resource/{type}/{.id*}:
+    get:
+      operationId: getResource
+      parameters:
+        - name: type
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                properties:
+                  name:
+                    type: string
+                  id:
+                    type: integer
+  /wildcardparam/{type}/{id=*}:
+    get:
+      operationId: getWildcardparamResource
+      parameters:
+        - name: type
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: id=*
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                properties:
+                  name:
+                    type: string
+                  id:
+                    type: integer
 components:
   securitySchemes:
     BearerAuth:

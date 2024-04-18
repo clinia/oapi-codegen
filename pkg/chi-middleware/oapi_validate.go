@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/clinia/oapi-codegen/pkg/codegen"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/getkin/kin-openapi/routers"
@@ -45,6 +46,8 @@ func OapiRequestValidatorWithOptions(swagger *openapi3.T, options *Options) func
 		log.Println("WARN: OapiRequestValidatorWithOptions called with an OpenAPI spec that has `Servers` set. This may lead to an HTTP 400 with `no matching operation was found` when sending a valid request, as the validator performs `Host` header validation. If you're expecting `Host` header validation, you can silence this warning by setting `Options.SilenceServersWarning = true`. See https://github.com/clinia/oapi-codegen/issues/882 for more information.")
 	}
 
+	swagger.Paths = SwaggerPathsToGorillaPaths(swagger.Paths)
+
 	router, err := gorillamux.NewRouter(swagger)
 	if err != nil {
 		panic(err)
@@ -70,6 +73,14 @@ func OapiRequestValidatorWithOptions(swagger *openapi3.T, options *Options) func
 
 }
 
+func SwaggerPathsToGorillaPaths(paths openapi3.Paths) openapi3.Paths {
+	newPaths := openapi3.Paths{}
+	for path, pathItem := range paths {
+		newPaths[codegen.SwaggerUriToGorillaUri(path)] = pathItem
+	}
+	return newPaths
+}
+
 // This function is called from the middleware above and actually does the work
 // of validating a request.
 func validateRequest(r *http.Request, router routers.Router, options *Options) (int, error) {
@@ -93,7 +104,7 @@ func validateRequest(r *http.Request, router routers.Router, options *Options) (
 
 	if err := openapi3filter.ValidateRequest(context.Background(), requestValidationInput); err != nil {
 		me := openapi3.MultiError{}
-		if errors.As(err, &me) {
+		if errors.As(err, &me) && options.Options.MultiError {
 			errFunc := getMultiErrorHandlerFromOptions(options)
 			return errFunc(me)
 		}
@@ -101,6 +112,8 @@ func validateRequest(r *http.Request, router routers.Router, options *Options) (
 		switch e := err.(type) {
 		case *openapi3filter.RequestError:
 			// We've got a bad request
+			// Remove reference to schema
+			e.Reason = ""
 			// Split up the verbose error by lines and return the first one
 			// openapi errors seem to be multi-line with a decent message on the first
 			errorLines := strings.Split(e.Error(), "\n")
