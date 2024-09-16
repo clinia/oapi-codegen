@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/clinia/oapi-codegen/pkg/codegen"
@@ -55,6 +56,9 @@ func OapiRequestValidatorWithOptions(swagger *openapi3.T, options *Options) func
 
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Decode the path to support encoded path variables
+			// This is a hack to avoid modifying the openapi3filter dependency
+			r.URL.RawPath, _ = url.QueryUnescape(r.URL.RawPath)
 
 			// validate request
 			if statusCode, err := validateRequest(r, router, options); err != nil {
