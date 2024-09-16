@@ -58,6 +58,7 @@ func OapiRequestValidatorWithOptions(swagger *openapi3.T, options *Options) func
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Decode the path to support encoded path variables
 			// This is a hack to avoid modifying the openapi3filter dependency
+			// Reference: [ENG-1396]
 			r.URL.RawPath, _ = url.QueryUnescape(r.URL.RawPath)
 
 			// validate request
