@@ -47,7 +47,7 @@
                         union: t.union,
                     }
                     return p.MarshalJSON()
-                }{{else}}
+                }{{else if eq .NameTag "JSON"}}
                 func (t {{$receiverTypeName}}) MarshalJSON() ([]byte, error) {
                     o := {{.Schema.TypeDecl}}(t)
                     return json.Marshal(o)
