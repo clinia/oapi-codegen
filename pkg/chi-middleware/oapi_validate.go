@@ -20,7 +20,7 @@ import (
 )
 
 // ErrorHandler is called when there is an error in validation
-type ErrorHandler func(w http.ResponseWriter, r *http.Request, message string, statusCode int)
+type ErrorHandler func(w http.ResponseWriter, r *http.Request, err error, statusCode int)
 
 // MultiErrorHandler is called when oapi returns a MultiError type
 type MultiErrorHandler func(openapi3.MultiError) (int, error)
@@ -64,7 +64,7 @@ func OapiRequestValidatorWithOptions(swagger *openapi3.T, options *Options) func
 			// validate request
 			if statusCode, err := validateRequest(r, router, options); err != nil {
 				if options != nil && options.ErrorHandler != nil {
-					options.ErrorHandler(w, r, err.Error(), statusCode)
+					options.ErrorHandler(w, r, err, statusCode)
 				} else {
 					http.Error(w, err.Error(), statusCode)
 				}
