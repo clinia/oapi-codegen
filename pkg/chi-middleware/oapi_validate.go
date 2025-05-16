@@ -79,10 +79,10 @@ func OapiRequestValidatorWithOptions(swagger *openapi3.T, options *Options) func
 
 }
 
-func SwaggerPathsToGorillaPaths(paths openapi3.Paths) openapi3.Paths {
-	newPaths := openapi3.Paths{}
-	for path, pathItem := range paths {
-		newPaths[codegen.SwaggerUriToGorillaUri(path)] = pathItem
+func SwaggerPathsToGorillaPaths(paths *openapi3.Paths) *openapi3.Paths {
+	newPaths := &openapi3.Paths{}
+	for path, pathItem := range paths.Map() {
+		newPaths.Set(codegen.SwaggerUriToGorillaUri(path), pathItem)
 	}
 	return newPaths
 }

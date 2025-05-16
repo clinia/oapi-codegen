@@ -181,19 +181,6 @@ func SortedSchemaKeys(dict map[string]*openapi3.SchemaRef) []string {
 	return keys
 }
 
-// SortedPathsKeys is the same as above, except it sorts the keys for a Paths
-// dictionary.
-func SortedPathsKeys(dict openapi3.Paths) []string {
-	keys := make([]string, len(dict))
-	i := 0
-	for key := range dict {
-		keys[i] = key
-		i++
-	}
-	sort.Strings(keys)
-	return keys
-}
-
 // SortedOperationsKeys returns Operation dictionary keys in sorted order
 func SortedOperationsKeys(dict map[string]*openapi3.Operation) []string {
 	keys := make([]string, len(dict))
@@ -206,13 +193,12 @@ func SortedOperationsKeys(dict map[string]*openapi3.Operation) []string {
 	return keys
 }
 
-// SortedResponsesKeys returns Responses dictionary keys in sorted order
-func SortedResponsesKeys(dict openapi3.Responses) []string {
-	keys := make([]string, len(dict))
-	i := 0
-	for key := range dict {
-		keys[i] = key
-		i++
+// SortedMapKeys takes a map with keys of type string and returns a slice of those
+// keys sorted lexicographically.
+func SortedMapKeys[T any](m map[string]T) []string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
 	}
 	sort.Strings(keys)
 	return keys
