@@ -4,19 +4,18 @@ import "github.com/getkin/kin-openapi/openapi3"
 
 func filterOperationsByTag(swagger *openapi3.T, opts Configuration) {
 	if len(opts.OutputOptions.ExcludeTags) > 0 {
-		excludeOperationsWithTags(swagger.Paths, opts.OutputOptions.ExcludeTags)
+		operationsWithTag(swagger.Paths, opts.OutputOptions.ExcludeTags, true)
 	}
 	if len(opts.OutputOptions.IncludeTags) > 0 {
-		includeOperationsWithTags(swagger.Paths, opts.OutputOptions.IncludeTags, false)
+		operationsWithTag(swagger.Paths, opts.OutputOptions.IncludeTags, false)
 	}
 }
+func operationsWithTag(paths *openapi3.Paths, tags []string, exclude bool) {
+	if paths == nil {
+		return
+	}
 
-func excludeOperationsWithTags(paths openapi3.Paths, tags []string) {
-	includeOperationsWithTags(paths, tags, true)
-}
-
-func includeOperationsWithTags(paths openapi3.Paths, tags []string, exclude bool) {
-	for _, pathItem := range paths {
+	for _, pathItem := range paths.Map() {
 		ops := pathItem.Operations()
 		names := make([]string, 0, len(ops))
 		for name, op := range ops {

@@ -122,8 +122,8 @@ func genResponseUnmarshal(op *OperationDefinition) string {
 	responses := op.Spec.Responses
 	for _, typeDefinition := range typeDefinitions {
 
-		responseRef, ok := responses[typeDefinition.ResponseName]
-		if !ok {
+		responseRef := responses.Value(typeDefinition.ResponseName)
+		if responseRef == nil {
 			continue
 		}
 

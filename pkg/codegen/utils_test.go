@@ -43,21 +43,6 @@ func TestSortedSchemaKeys(t *testing.T) {
 	assert.EqualValues(t, expected, SortedSchemaKeys(dict), "Keys are not sorted properly")
 }
 
-func TestSortedPathsKeys(t *testing.T) {
-	dict := openapi3.Paths{
-		"f": nil,
-		"c": nil,
-		"b": nil,
-		"e": nil,
-		"d": nil,
-		"a": nil,
-	}
-
-	expected := []string{"a", "b", "c", "d", "e", "f"}
-
-	assert.EqualValues(t, expected, SortedPathsKeys(dict), "Keys are not sorted properly")
-}
-
 func TestSortedOperationsKeys(t *testing.T) {
 	dict := map[string]*openapi3.Operation{
 		"f": nil,
@@ -71,21 +56,6 @@ func TestSortedOperationsKeys(t *testing.T) {
 	expected := []string{"a", "b", "c", "d", "e", "f"}
 
 	assert.EqualValues(t, expected, SortedOperationsKeys(dict), "Keys are not sorted properly")
-}
-
-func TestSortedResponsesKeys(t *testing.T) {
-	dict := openapi3.Responses{
-		"f": nil,
-		"c": nil,
-		"b": nil,
-		"e": nil,
-		"d": nil,
-		"a": nil,
-	}
-
-	expected := []string{"a", "b", "c", "d", "e", "f"}
-
-	assert.EqualValues(t, expected, SortedResponsesKeys(dict), "Keys are not sorted properly")
 }
 
 func TestSortedContentKeys(t *testing.T) {

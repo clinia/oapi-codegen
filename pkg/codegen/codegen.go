@@ -514,10 +514,10 @@ func GenerateTypesForParameters(t *template.Template, params map[string]*openapi
 
 // GenerateTypesForResponses generates type definitions for any custom types defined in the
 // components/responses section of the Swagger spec.
-func GenerateTypesForResponses(t *template.Template, responses openapi3.Responses) ([]TypeDefinition, error) {
+func GenerateTypesForResponses(t *template.Template, responses openapi3.ResponseBodies) ([]TypeDefinition, error) {
 	var types []TypeDefinition
 
-	for _, responseName := range SortedResponsesKeys(responses) {
+	for _, responseName := range SortedMapKeys(responses) {
 		responseOrRef := responses[responseName]
 
 		// We have to generate the response object. We're only going to
@@ -951,8 +951,7 @@ func GoSchemaImports(schemas ...*openapi3.SchemaRef) (map[string]goImport, error
 		schemaVal := sref.Value
 
 		t := schemaVal.Type
-		switch t {
-		case "", "object":
+		if t.Slice() == nil || t.Is("object") {
 			for _, v := range schemaVal.Properties {
 				imprts, err := GoSchemaImports(v)
 				if err != nil {
@@ -960,7 +959,7 @@ func GoSchemaImports(schemas ...*openapi3.SchemaRef) (map[string]goImport, error
 				}
 				MergeImports(res, imprts)
 			}
-		case "array":
+		} else if t.Is("array") {
 			imprts, err := GoSchemaImports(schemaVal.Items)
 			if err != nil {
 				return nil, err
