@@ -16,7 +16,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/clinia/oapi-codegen/internal/test/strict-server/chi"
+	api "github.com/clinia/oapi-codegen/internal/test/strict-server/chi"
 	api3 "github.com/clinia/oapi-codegen/internal/test/strict-server/client"
 	api4 "github.com/clinia/oapi-codegen/internal/test/strict-server/echo"
 	api2 "github.com/clinia/oapi-codegen/internal/test/strict-server/gin"

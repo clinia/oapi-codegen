@@ -464,7 +464,7 @@ type UnmarshallingParamError struct {
 }
 
 func (e *UnmarshallingParamError) Error() string {
-	return fmt.Sprintf("Error unmarshalling parameter %s as JSON: %s", e.ParamName, e.Err.Error())
+	return fmt.Sprintf("Error unmarshalling parameter '%s' as JSON", e.ParamName)
 }
 
 func (e *UnmarshallingParamError) Unwrap() error {
@@ -498,7 +498,7 @@ type InvalidParamFormatError struct {
 }
 
 func (e *InvalidParamFormatError) Error() string {
-	return fmt.Sprintf("Invalid format for parameter %s: %s", e.ParamName, e.Err.Error())
+	return fmt.Sprintf("Invalid format for parameter '%s'", e.ParamName)
 }
 
 func (e *InvalidParamFormatError) Unwrap() error {

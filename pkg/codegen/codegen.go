@@ -820,7 +820,7 @@ func GenerateUnionAndAdditionalProopertiesBoilerplate(t *template.Template, type
 func SanitizeCode(goCode string) string {
 	// remove any byte-order-marks which break Go-Code
 	// See: https://groups.google.com/forum/#!topic/golang-nuts/OToNIPdfkks
-	return strings.Replace(goCode, "\uFEFF", "", -1)
+	return strings.ReplaceAll(goCode, "\uFEFF", "")
 }
 
 // LoadTemplates loads all of our template files into a text/template. The
@@ -943,10 +943,8 @@ func GoSchemaImports(schemas ...*openapi3.SchemaRef) (map[string]goImport, error
 		}
 		if gi, err := ParseGoImportExtension(sref); err != nil {
 			return nil, err
-		} else {
-			if gi != nil {
-				res[gi.String()] = *gi
-			}
+		} else if gi != nil {
+			res[gi.String()] = *gi
 		}
 		schemaVal := sref.Value
 

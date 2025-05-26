@@ -146,7 +146,7 @@ func main() {
 
 		// If one of the two files parses, but the other fails, we know the
 		// answer.
-		if oldErr != nil && newErr == nil {
+		if oldErr != nil && newErr == nil { //nolint:gocritic
 			f := false
 			oldConfigStyle = &f
 		} else if oldErr == nil && newErr != nil {
@@ -267,7 +267,7 @@ func main() {
 	}
 
 	if opts.OutputFile != "" {
-		err = os.WriteFile(opts.OutputFile, []byte(code), 0644)
+		err = os.WriteFile(opts.OutputFile, []byte(code), 0644) //nolint:gosec
 		if err != nil {
 			errExit("error writing generated code to file: %s\n", err)
 		}

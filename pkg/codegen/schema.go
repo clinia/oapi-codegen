@@ -284,7 +284,7 @@ func GenerateGoSchema(sref *openapi3.SchemaRef, path []string) (Schema, error) {
 	// Schema type and format, eg. string / binary
 	t := schema.Type
 	// Handle objects and empty schemas first as a special case
-	if t.Slice() == nil || t.Is("object") {
+	if t.Slice() == nil || t.Is("object") { //nolint:gocritic
 		var outType string
 
 		if len(schema.Properties) == 0 && !SchemaHasAdditionalProperties(schema) && schema.AnyOf == nil && schema.OneOf == nil {
@@ -493,6 +493,7 @@ func oapiSchemaToGoType(schema *openapi3.Schema, path []string, outSchema *Schem
 	f := schema.Format
 	t := schema.Type
 
+	//nolint:gocritic
 	if t.Is("array") {
 		// For arrays, we'll get the type of the Items and throw a
 		// [] in front of it.

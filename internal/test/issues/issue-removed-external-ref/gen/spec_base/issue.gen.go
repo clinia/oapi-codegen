@@ -91,7 +91,7 @@ type UnmarshallingParamError struct {
 }
 
 func (e *UnmarshallingParamError) Error() string {
-	return fmt.Sprintf("Error unmarshalling parameter %s as JSON: %s", e.ParamName, e.Err.Error())
+	return fmt.Sprintf("Error unmarshalling parameter '%s' as JSON", e.ParamName)
 }
 
 func (e *UnmarshallingParamError) Unwrap() error {
@@ -125,7 +125,7 @@ type InvalidParamFormatError struct {
 }
 
 func (e *InvalidParamFormatError) Error() string {
-	return fmt.Sprintf("Invalid format for parameter %s: %s", e.ParamName, e.Err.Error())
+	return fmt.Sprintf("Invalid format for parameter '%s'", e.ParamName)
 }
 
 func (e *InvalidParamFormatError) Unwrap() error {
@@ -225,6 +225,32 @@ type PostNoTrouble200JSONResponse struct {
 	DirectFoo   *externalRef0.Foo `json:"directFoo,omitempty"`
 	IndirectFoo *PackedBar        `json:"indirectFoo,omitempty"`
 	Name        *string           `json:"name,omitempty"`
+}
+
+func (t PostNoTrouble200JSONResponse) MarshalJSON() ([]byte, error) {
+	o := struct {
+		DirectBar   *DirectBar        `json:"directBar,omitempty"`
+		DirectFoo   *externalRef0.Foo `json:"directFoo,omitempty"`
+		IndirectFoo *PackedBar        `json:"indirectFoo,omitempty"`
+		Name        *string           `json:"name,omitempty"`
+	}(t)
+	return json.Marshal(o)
+}
+
+func (t *PostNoTrouble200JSONResponse) UnmarshalJSON(data []byte) error {
+	o := struct {
+		DirectBar   *DirectBar        `json:"directBar,omitempty"`
+		DirectFoo   *externalRef0.Foo `json:"directFoo,omitempty"`
+		IndirectFoo *PackedBar        `json:"indirectFoo,omitempty"`
+		Name        *string           `json:"name,omitempty"`
+	}{}
+	err := json.Unmarshal(data, &o)
+	if err != nil {
+		return err
+	}
+
+	*t = PostNoTrouble200JSONResponse(o)
+	return nil
 }
 
 func (response PostNoTrouble200JSONResponse) VisitPostNoTroubleResponse(w http.ResponseWriter) error {
