@@ -68,8 +68,7 @@ func OapiRequestValidatorWithOptions(swagger *openapi3.T, options *Options) func
 				} else {
 					http.Error(w, err.Error(), statusCode)
 				}
-				// FIXME: [ENG-1248] Remove bring back the return statement
-				// return
+				return
 			}
 
 			// serve
