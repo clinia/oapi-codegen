@@ -91,11 +91,7 @@ func OapiRequestValidatorWithOptions(sw *openapi3.T, opts *Options) func(next ht
 			// validate request
 			statusCode, err := validateRequest(r, router, opts)
 			if err != nil {
-				// multi-error handler takes priority when enabled
-				if opts != nil && opts.Options.MultiError && opts.MultiErrorHandler != nil {
-					status, respErr := opts.MultiErrorHandler(openapi3.MultiError{err})
-					http.Error(w, respErr.Error(), status)
-				} else if opts != nil && opts.ErrorHandler != nil {
+				if opts != nil && opts.ErrorHandler != nil {
 					opts.ErrorHandler(w, r, err, statusCode)
 				} else {
 					http.Error(w, err.Error(), statusCode)
