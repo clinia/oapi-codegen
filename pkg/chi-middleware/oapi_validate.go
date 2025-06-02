@@ -32,6 +32,8 @@ type Options struct {
 	MultiErrorHandler MultiErrorHandler
 	// SilenceServersWarning allows silencing a warning for https://github.com/clinia/oapi-codegen/issues/882 that reports when an OpenAPI spec has `spec.Servers != nil`
 	SilenceServersWarning bool
+	// If true, the next handler will be called even when validation fails
+	ContinueOnError bool
 }
 
 // OapiRequestValidator Creates middleware to validate request by swagger spec.
@@ -40,8 +42,28 @@ func OapiRequestValidator(swagger *openapi3.T) func(next http.Handler) http.Hand
 	return OapiRequestValidatorWithOptions(swagger, nil)
 }
 
-// OapiRequestValidatorWithOptions Creates middleware to validate request by swagger spec.
+// OapiRequestValidatorWithOptions Creates middleware to validate request by swagger spec
+// against an OpenAPI 3 specification.
 // This middleware is good for net/http either since go-chi is 100% compatible with net/http.
+//
+// Parameters:
+//   - swagger: Pointer to an OpenAPI 3 specification object
+//   - options: Optional configuration parameters for the validator
+//
+// Returns a middleware function that can be used with HTTP handlers.
+//
+// The middleware performs the following:
+//   - Validates requests against the provided OpenAPI specification
+//   - Supports URL-encoded path parameters
+//   - Handles validation errors through a custom error handler if provided in options
+//   - Can continue processing despite validation errors if ContinueOnError is set
+//
+// Warning: If the OpenAPI spec includes Servers configuration, the middleware performs
+// Host header validation which may result in 400 Bad Request responses for otherwise valid requests.
+// This behavior can be silenced by setting Options.SilenceServersWarning to true.
+//
+// The returned middleware function wraps the next handler in the chain and performs validation
+// before passing the request through.
 func OapiRequestValidatorWithOptions(swagger *openapi3.T, options *Options) func(next http.Handler) http.Handler {
 	if swagger.Servers != nil && (options == nil || options.SilenceServersWarning) {
 		log.Println("WARN: OapiRequestValidatorWithOptions called with an OpenAPI spec that has `Servers` set. This may lead to an HTTP 400 with `no matching operation was found` when sending a valid request, as the validator performs `Host` header validation. If you're expecting `Host` header validation, you can silence this warning by setting `Options.SilenceServersWarning = true`. See https://github.com/clinia/oapi-codegen/issues/882 for more information.")
@@ -62,13 +84,21 @@ func OapiRequestValidatorWithOptions(swagger *openapi3.T, options *Options) func
 			r.URL.RawPath, _ = url.QueryUnescape(r.URL.RawPath)
 
 			// validate request
-			if statusCode, err := validateRequest(r, router, options); err != nil {
+			statusCode, err := validateRequest(r, router, options)
+			if err != nil {
 				if options != nil && options.ErrorHandler != nil {
 					options.ErrorHandler(w, r, err, statusCode)
 				} else {
 					http.Error(w, err.Error(), statusCode)
 				}
-				return
+
+				// In some instances, we want to continue processing the request
+				// even if validation fails. This is useful for logging or
+				// debugging purposes, or when the caller wants to handle the
+				// error in a different way.
+				if options == nil || !options.ContinueOnError {
+					return
+				}
 			}
 
 			// serve
