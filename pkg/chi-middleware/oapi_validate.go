@@ -42,11 +42,6 @@ func OapiRequestValidator(swagger *openapi3.T) func(next http.Handler) http.Hand
 	return OapiRequestValidatorWithOptions(swagger, nil)
 }
 
-// shouldWarnAboutServers checks if a warning about the `Servers` field in the OpenAPI spec should be logged.
-func shouldWarnAboutServers(swagger *openapi3.T, options *Options) bool {
-	return swagger.Servers != nil && (options == nil || options.SilenceServersWarning)
-}
-
 // OapiRequestValidatorWithOptions Creates middleware to validate request by swagger spec
 // against an OpenAPI 3 specification.
 // This middleware is good for net/http either since go-chi is 100% compatible with net/http.
@@ -70,7 +65,7 @@ func shouldWarnAboutServers(swagger *openapi3.T, options *Options) bool {
 // The returned middleware function wraps the next handler in the chain and performs validation
 // before passing the request through.
 func OapiRequestValidatorWithOptions(sw *openapi3.T, opts *Options) func(next http.Handler) http.Handler {
-	if shouldWarnAboutServers(sw, opts) {
+	if sw.Servers != nil && (opts == nil || opts.SilenceServersWarning) {
 		log.Println("WARN: OapiRequestValidatorWithOptions called with an OpenAPI spec that has `Servers` set. This may lead to an HTTP 400 with `no matching operation was found` when sending a valid request, as the validator performs `Host` header validation. If you're expecting `Host` header validation, you can silence this warning by setting `Options.SilenceServersWarning = true`. See https://github.com/clinia/oapi-codegen/issues/882 for more information.")
 	}
 
