@@ -18,6 +18,7 @@ import (
 	"strings"
 
 	"github.com/clinia/oapi-codegen/pkg/runtime"
+	"github.com/clinia/x/errorx"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi/v5"
 )
@@ -294,7 +295,7 @@ type UnmarshallingParamError struct {
 }
 
 func (e *UnmarshallingParamError) Error() string {
-	return fmt.Sprintf("Error unmarshalling parameter %s as JSON: %s", e.ParamName, e.Err.Error())
+	return fmt.Sprintf("Error unmarshalling parameter '%s' as JSON", e.ParamName)
 }
 
 func (e *UnmarshallingParamError) Unwrap() error {
@@ -328,7 +329,7 @@ type InvalidParamFormatError struct {
 }
 
 func (e *InvalidParamFormatError) Error() string {
-	return fmt.Sprintf("Invalid format for parameter %s: %s", e.ParamName, e.Err.Error())
+	return fmt.Sprintf("Invalid format for parameter '%s'", e.ParamName)
 }
 
 func (e *InvalidParamFormatError) Unwrap() error {
@@ -445,6 +446,22 @@ type JSONExampleResponseObject interface {
 
 type JSONExample200JSONResponse Example
 
+func (t JSONExample200JSONResponse) MarshalJSON() ([]byte, error) {
+	o := Example(t)
+	return json.Marshal(o)
+}
+
+func (t *JSONExample200JSONResponse) UnmarshalJSON(data []byte) error {
+	o := Example{}
+	err := json.Unmarshal(data, &o)
+	if err != nil {
+		return err
+	}
+
+	*t = JSONExample200JSONResponse(o)
+	return nil
+}
+
 func (response JSONExample200JSONResponse) VisitJSONExampleResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
@@ -516,6 +533,22 @@ type MultipleRequestAndResponseTypesResponseObject interface {
 }
 
 type MultipleRequestAndResponseTypes200JSONResponse Example
+
+func (t MultipleRequestAndResponseTypes200JSONResponse) MarshalJSON() ([]byte, error) {
+	o := Example(t)
+	return json.Marshal(o)
+}
+
+func (t *MultipleRequestAndResponseTypes200JSONResponse) UnmarshalJSON(data []byte) error {
+	o := Example{}
+	err := json.Unmarshal(data, &o)
+	if err != nil {
+		return err
+	}
+
+	*t = MultipleRequestAndResponseTypes200JSONResponse(o)
+	return nil
+}
 
 func (response MultipleRequestAndResponseTypes200JSONResponse) VisitMultipleRequestAndResponseTypesResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -928,7 +961,7 @@ func (sh *strictHandler) JSONExample(w http.ResponseWriter, r *http.Request) {
 
 	var body JSONExampleJSONRequestBody
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		sh.options.RequestErrorHandlerFunc(w, r, errorx.InvalidArgumentErrorf("can't decode JSON body: %v", err))
 		return
 	}
 	request.Body = &body
@@ -958,7 +991,7 @@ func (sh *strictHandler) MultipartExample(w http.ResponseWriter, r *http.Request
 	var request MultipartExampleRequestObject
 
 	if reader, err := r.MultipartReader(); err != nil {
-		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode multipart body: %w", err))
+		sh.options.RequestErrorHandlerFunc(w, r, errorx.InvalidArgumentErrorf("can't decode multipart body: %v", err))
 		return
 	} else {
 		request.Body = reader
@@ -991,19 +1024,19 @@ func (sh *strictHandler) MultipleRequestAndResponseTypes(w http.ResponseWriter, 
 	if strings.HasPrefix(r.Header.Get("Content-Type"), "application/json") {
 		var body MultipleRequestAndResponseTypesJSONRequestBody
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-			sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+			sh.options.RequestErrorHandlerFunc(w, r, errorx.InvalidArgumentErrorf("can't decode JSON body: %v", err))
 			return
 		}
 		request.JSONBody = &body
 	}
 	if strings.HasPrefix(r.Header.Get("Content-Type"), "application/x-www-form-urlencoded") {
 		if err := r.ParseForm(); err != nil {
-			sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode formdata: %w", err))
+			sh.options.RequestErrorHandlerFunc(w, r, errorx.InvalidArgumentErrorf("can't decode formdata: %v", err))
 			return
 		}
 		var body MultipleRequestAndResponseTypesFormdataRequestBody
 		if err := runtime.BindForm(&body, r.Form, nil, nil); err != nil {
-			sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't bind formdata: %w", err))
+			sh.options.RequestErrorHandlerFunc(w, r, errorx.InvalidArgumentErrorf("can't bind formdata: %v", err))
 			return
 		}
 		request.FormdataBody = &body
@@ -1013,7 +1046,7 @@ func (sh *strictHandler) MultipleRequestAndResponseTypes(w http.ResponseWriter, 
 	}
 	if strings.HasPrefix(r.Header.Get("Content-Type"), "multipart/form-data") {
 		if reader, err := r.MultipartReader(); err != nil {
-			sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode multipart body: %w", err))
+			sh.options.RequestErrorHandlerFunc(w, r, errorx.InvalidArgumentErrorf("can't decode multipart body: %v", err))
 			return
 		} else {
 			request.MultipartBody = reader
@@ -1022,7 +1055,7 @@ func (sh *strictHandler) MultipleRequestAndResponseTypes(w http.ResponseWriter, 
 	if strings.HasPrefix(r.Header.Get("Content-Type"), "text/plain") {
 		data, err := io.ReadAll(r.Body)
 		if err != nil {
-			sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't read body: %w", err))
+			sh.options.RequestErrorHandlerFunc(w, r, errorx.InvalidArgumentErrorf("can't read body: %v", err))
 			return
 		}
 		body := MultipleRequestAndResponseTypesTextRequestBody(data)
@@ -1081,7 +1114,7 @@ func (sh *strictHandler) ReusableResponses(w http.ResponseWriter, r *http.Reques
 
 	var body ReusableResponsesJSONRequestBody
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		sh.options.RequestErrorHandlerFunc(w, r, errorx.InvalidArgumentErrorf("can't decode JSON body: %v", err))
 		return
 	}
 	request.Body = &body
@@ -1112,7 +1145,7 @@ func (sh *strictHandler) TextExample(w http.ResponseWriter, r *http.Request) {
 
 	data, err := io.ReadAll(r.Body)
 	if err != nil {
-		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't read body: %w", err))
+		sh.options.RequestErrorHandlerFunc(w, r, errorx.InvalidArgumentErrorf("can't read body: %v", err))
 		return
 	}
 	body := TextExampleTextRequestBody(data)
@@ -1197,12 +1230,12 @@ func (sh *strictHandler) URLEncodedExample(w http.ResponseWriter, r *http.Reques
 	var request URLEncodedExampleRequestObject
 
 	if err := r.ParseForm(); err != nil {
-		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode formdata: %w", err))
+		sh.options.RequestErrorHandlerFunc(w, r, errorx.InvalidArgumentErrorf("can't decode formdata: %v", err))
 		return
 	}
 	var body URLEncodedExampleFormdataRequestBody
 	if err := runtime.BindForm(&body, r.Form, nil, nil); err != nil {
-		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't bind formdata: %w", err))
+		sh.options.RequestErrorHandlerFunc(w, r, errorx.InvalidArgumentErrorf("can't bind formdata: %v", err))
 		return
 	}
 	request.Body = &body
@@ -1235,7 +1268,7 @@ func (sh *strictHandler) HeadersExample(w http.ResponseWriter, r *http.Request, 
 
 	var body HeadersExampleJSONRequestBody
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		sh.options.RequestErrorHandlerFunc(w, r, errorx.InvalidArgumentErrorf("can't decode JSON body: %v", err))
 		return
 	}
 	request.Body = &body

@@ -11,10 +11,11 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version-file: 'go.mod'
+          go-version-file: "go.mod"
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
+        uses: golangci/golangci-lint-action@v8
         with:
           # Make sure this matches the version we've got in our `Makefile`
-          version: v1.50.1
+          version: v2.1.6
+          args: --timeout=1m

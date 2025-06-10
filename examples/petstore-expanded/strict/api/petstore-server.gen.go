@@ -16,6 +16,7 @@ import (
 	"strings"
 
 	"github.com/clinia/oapi-codegen/pkg/runtime"
+	"github.com/clinia/x/errorx"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi/v5"
 )
@@ -167,7 +168,7 @@ type UnmarshallingParamError struct {
 }
 
 func (e *UnmarshallingParamError) Error() string {
-	return fmt.Sprintf("Error unmarshalling parameter %s as JSON: %s", e.ParamName, e.Err.Error())
+	return fmt.Sprintf("Error unmarshalling parameter '%s' as JSON", e.ParamName)
 }
 
 func (e *UnmarshallingParamError) Unwrap() error {
@@ -201,7 +202,7 @@ type InvalidParamFormatError struct {
 }
 
 func (e *InvalidParamFormatError) Error() string {
-	return fmt.Sprintf("Invalid format for parameter %s: %s", e.ParamName, e.Err.Error())
+	return fmt.Sprintf("Invalid format for parameter '%s'", e.ParamName)
 }
 
 func (e *InvalidParamFormatError) Unwrap() error {
@@ -287,6 +288,22 @@ type FindPetsResponseObject interface {
 
 type FindPets200JSONResponse []Pet
 
+func (t FindPets200JSONResponse) MarshalJSON() ([]byte, error) {
+	o := []Pet(t)
+	return json.Marshal(o)
+}
+
+func (t *FindPets200JSONResponse) UnmarshalJSON(data []byte) error {
+	o := []Pet{}
+	err := json.Unmarshal(data, &o)
+	if err != nil {
+		return err
+	}
+
+	*t = FindPets200JSONResponse(o)
+	return nil
+}
+
 func (response FindPets200JSONResponse) VisitFindPetsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
@@ -315,6 +332,22 @@ type AddPetResponseObject interface {
 }
 
 type AddPet200JSONResponse Pet
+
+func (t AddPet200JSONResponse) MarshalJSON() ([]byte, error) {
+	o := Pet(t)
+	return json.Marshal(o)
+}
+
+func (t *AddPet200JSONResponse) UnmarshalJSON(data []byte) error {
+	o := Pet{}
+	err := json.Unmarshal(data, &o)
+	if err != nil {
+		return err
+	}
+
+	*t = AddPet200JSONResponse(o)
+	return nil
+}
 
 func (response AddPet200JSONResponse) VisitAddPetResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -372,6 +405,22 @@ type FindPetByIDResponseObject interface {
 }
 
 type FindPetByID200JSONResponse Pet
+
+func (t FindPetByID200JSONResponse) MarshalJSON() ([]byte, error) {
+	o := Pet(t)
+	return json.Marshal(o)
+}
+
+func (t *FindPetByID200JSONResponse) UnmarshalJSON(data []byte) error {
+	o := Pet{}
+	err := json.Unmarshal(data, &o)
+	if err != nil {
+		return err
+	}
+
+	*t = FindPetByID200JSONResponse(o)
+	return nil
+}
 
 func (response FindPetByID200JSONResponse) VisitFindPetByIDResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -470,7 +519,7 @@ func (sh *strictHandler) AddPet(w http.ResponseWriter, r *http.Request) {
 
 	var body AddPetJSONRequestBody
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		sh.options.RequestErrorHandlerFunc(w, r, errorx.InvalidArgumentErrorf("can't decode JSON body: %v", err))
 		return
 	}
 	request.Body = &body

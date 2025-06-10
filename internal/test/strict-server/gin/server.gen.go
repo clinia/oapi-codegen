@@ -316,6 +316,22 @@ type JSONExampleResponseObject interface {
 
 type JSONExample200JSONResponse Example
 
+func (t JSONExample200JSONResponse) MarshalJSON() ([]byte, error) {
+	o := Example(t)
+	return json.Marshal(o)
+}
+
+func (t *JSONExample200JSONResponse) UnmarshalJSON(data []byte) error {
+	o := Example{}
+	err := json.Unmarshal(data, &o)
+	if err != nil {
+		return err
+	}
+
+	*t = JSONExample200JSONResponse(o)
+	return nil
+}
+
 func (response JSONExample200JSONResponse) VisitJSONExampleResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
@@ -387,6 +403,22 @@ type MultipleRequestAndResponseTypesResponseObject interface {
 }
 
 type MultipleRequestAndResponseTypes200JSONResponse Example
+
+func (t MultipleRequestAndResponseTypes200JSONResponse) MarshalJSON() ([]byte, error) {
+	o := Example(t)
+	return json.Marshal(o)
+}
+
+func (t *MultipleRequestAndResponseTypes200JSONResponse) UnmarshalJSON(data []byte) error {
+	o := Example{}
+	err := json.Unmarshal(data, &o)
+	if err != nil {
+		return err
+	}
+
+	*t = MultipleRequestAndResponseTypes200JSONResponse(o)
+	return nil
+}
 
 func (response MultipleRequestAndResponseTypes200JSONResponse) VisitMultipleRequestAndResponseTypesResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")

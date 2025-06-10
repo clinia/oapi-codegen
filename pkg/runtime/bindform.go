@@ -200,7 +200,7 @@ func indexedElementsCount(form map[string][]string, files map[string][]*multipar
 	for k := range form {
 		if strings.HasPrefix(k, name) {
 			str := strings.TrimPrefix(k, name)
-			str = str[:strings.Index(str, "]")]
+			str = str[:strings.Index(str, "]")] //nolint:gocritic
 			if idx, err := strconv.Atoi(str); err == nil {
 				if idx > maxIndex {
 					maxIndex = idx
@@ -211,7 +211,7 @@ func indexedElementsCount(form map[string][]string, files map[string][]*multipar
 	for k := range files {
 		if strings.HasPrefix(k, name) {
 			str := strings.TrimPrefix(k, name)
-			str = str[:strings.Index(str, "]")]
+			str = str[:strings.Index(str, "]")] //nolint:gocritic
 			if idx, err := strconv.Atoi(str); err == nil {
 				if idx > maxIndex {
 					maxIndex = idx
@@ -241,7 +241,7 @@ func bindAdditionalProperties(additionalProperties reflect.Value, parentStruct r
 	for k := range form {
 		if strings.HasPrefix(k, name+"[") {
 			key := strings.TrimPrefix(k, name+"[")
-			key = key[:strings.Index(key, "]")]
+			key = key[:strings.Index(key, "]")] //nolint:gocritic
 			if _, ok := fieldsSet[key]; ok {
 				continue
 			}
@@ -257,7 +257,7 @@ func bindAdditionalProperties(additionalProperties reflect.Value, parentStruct r
 	for k := range files {
 		if strings.HasPrefix(k, name+"[") {
 			key := strings.TrimPrefix(k, name+"[")
-			key = key[:strings.Index(key, "]")]
+			key = key[:strings.Index(key, "]")] //nolint:gocritic
 			if _, ok := fieldsSet[key]; ok {
 				continue
 			}

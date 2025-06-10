@@ -1,0 +1,43 @@
+version: "2"
+linters:
+  default: none
+  enable:
+    - gocritic
+    - gosec
+    - govet
+    - misspell
+    - unused
+    - usetesting
+  settings:
+    gocritic:
+      disabled-checks:
+        - singleCaseSwitch
+        - appendAssign
+    gosec:
+      config:
+        G306: "0640"
+    govet:
+      enable:
+        - nilness
+    revive:
+      severity: warning
+      rules:
+        - name: var-naming
+          arguments:
+            - []
+            - - MDM
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - .+_test.go
+      - examples
+formatters:
+  exclusions:
+    generated: lax
+    paths:
+      - examples
